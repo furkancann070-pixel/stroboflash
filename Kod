@@ -1,0 +1,34 @@
+#include "PWM.h"
+#include <LiquidCrystal.h>
+LiquidCrystal lcd(8, 7, 6, 5, 4, 3);
+
+int pwm_pin = 9;
+uint16_t frq, frqy = 0;
+
+void setup() {
+  lcd.begin(16, 2);
+  Serial.begin(9600);
+  InitTimersSafe();                   // zaman tutma fonksiyonları kuruldu.
+  SetPinFrequencySafe(pwm_pin, frq);
+}
+
+void loop() {
+  pwmWrite(pwm_pin, 13);
+  delay(100);
+
+  frq = analogRead(A0);
+  frq = (frq + 10)*3;
+  SetPinFrequencySafe(pwm_pin, frq);
+
+  Serial.print("frq=");
+  Serial.println(frq);
+
+  if (frq != frqy) {  // pot değeri değişirse ekranı güncelle
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("RPM: ");
+    lcd.print(frq);
+  }
+  
+  frqy = frq;  // son değeri sakla
+}
